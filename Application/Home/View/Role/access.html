@@ -1,0 +1,71 @@
+<div class="row">
+  <div class="col-xs-9 col-sm-9 col-md-9  col-lg-9">
+    <h5>为【{$user.name}】设置权限</h5>
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="form-horizontal role_access_set_wrap" role="form">
+    <div class="form-group">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <foreach name="access_list" item="v">
+            <div class="checkbox">
+               <label>
+                <input type="checkbox" name="access_ids[]" value="{$v.id}" <?php if( in_array( $v['id'] ,$select_access_ids ) ):?> checked <?php endif;?>  /> {$v['title']}
+                </label>
+            </div>
+          </foreach>
+        </div>
+    </div>
+    <div class="col-xs-6 col-xs-offset-2 col-sm-6 col-sm-offset-2 col-md-6  col-md-offset-2 col-lg-6 col-sm-lg-2 ">
+      <input type="hidden" name="id" value="{$user.id}">
+      <button type="button" class="btn btn-primary pull-right save">确定</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+   $(".role_access_set_wrap .save").click(function(){
+    var btn_target = $(this);
+
+    if (btn_target.hasClass('disabled')) {
+      alert("正在处理，不要重复提交！");
+      return false;
+    }
+
+    var id = $(" .role_access_set_wrap input[name=id]").val();
+
+    var access_ids = [];
+    $(".role_access_set_wrap input[name='access_ids[]']").each( function(){
+      if( $(this).prop("checked") ){
+        access_ids.push( $(this).val() );
+      }
+    });
+
+    btn_target.addClass("disabled");
+
+    $.ajax({
+      type:"POST",
+      data:{
+        id:id,
+        access_ids:access_ids,
+      },
+      url:"{:U('Home/Role/access')}",
+      async:true,
+      timeout:5000,    //超时时间
+      dataType:'json', //返回的数据格式：json/xml/html/script/jsonp/text
+      success:function(data){
+        alert(data.msg);
+        console.log(data.msg);
+        btn_target.removeClass("disabled");
+        if (data.status == 1 ) {window.location.href = "{:U('Home/role/index/')}";}
+      },
+      error:function(data, textStatus){
+        alert(data.msg);
+        console.log(data.msg);
+        btn_target.removeClass("disabled");
+      },
+    });
+  });
+</script>

@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-xs-9 col-sm-9 col-md-9  col-lg-9">
+    <h5>角色列表</h5>
+  </div>
+  <div class="col-xs-3 col-sm-3 col-md-3  col-lg-3">
+    <a href="{:U('Role/set')}" class="btn btn-link pull-right"><button type="button" class="btn btn-info">添加角色</button></a>
+  </div>
+</div>
+<hr/>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Id</th>
+      <th>角色</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+      <foreach name="list" item="v">
+        <tr id="{$v.id}">
+          <td >{$v.id}</td>
+           <td>{$v.name}</td>
+          <td>
+              <a href="{:U('Role/set',array('uid'=>$v['id']))}">编辑</a>
+              <a href="javascript:void(0)" onclick="del({$v.id});" >删除</a>
+              <a href="{:U('Role/access',array('uid'=>$v['id']))}">设置权限</a>
+          </td>
+        </tr>
+      </foreach>
+    </tbody>
+  </table>
+  <div>{$page}</div>
+</div>
+<script type="text/javascript">
+  function del(id) {
+    confirm_ = confirm('您确定要删除吗?');
+    if (confirm_) {
+      $.ajax({
+        type:"POST",
+        data:{
+          id:id,
+        },
+        url:"{:U('Home/Role/delete')}",
+        async:true,
+        timeout:5000,    //超时时间
+        dataType:'json', //返回的数据格式：json/xml/html/script/jsonp/text
+        success:function(data, textStatus){
+          alert(data.msg);
+          console.log(textStatus);
+          $("#"+id).remove();
+          if (data.status == 1 ) {window.location.href = "{:U('Home/Role/index')}";}
+        },
+        error:function(data, textStatus){
+          alert(data.msg);
+          console.log(textStatus)
+        },
+      });
+    }
+
+  }
+
+</script>
